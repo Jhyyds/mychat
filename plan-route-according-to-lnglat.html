@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>地点关键字 + 驾车路线规划</title>
+    <style type="text/css">
+    html,
+    body,
+    #container {
+      width: 100%;
+      height: 100%;
+    }
+    </style>
+    <style type="text/css">
+        #panel {
+            position: fixed;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+        }
+        #panel .amap-call {
+            background-color: #009cf9;
+            border-top-left-radius: 4px;
+   	        border-top-right-radius: 4px;
+        }
+        #panel .amap-lib-driving {
+	        border-bottom-left-radius: 4px;
+   	        border-bottom-right-radius: 4px;
+            overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+          securityJsCode:"9acadcf3d4ee5992242b04b7fd9da587",
+        }
+      </script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=9d9704b872a88fca59adc67ef0dfe83f&plugin=AMap.Driving"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+    <div><img src="./blue.png" alt=""></div>
+<div id="container"></div>
+<script src="https://webapi.amap.com/loca?v=2.0.0&key=9d9704b872a88fca59adc67ef0dfe83f"></script>
+<div id="panel"></div>
+<script type="text/javascript">
+    //基本地图加载
+    // var map = new AMap.Map("container", {
+    //     resizeEnable: true,
+    //     center: [116.397428, 39.90923],//地图中心点
+    //     zoom: 13 //地图显示的缩放级别
+    // });
+    var map = new AMap.Map('container', {
+          zoom: 5,
+          center: [105.166417, 33.798078],
+          mapStyle: 'amap://styles/45311ae996a8bea0da10ad5151f72979',
+          // showLabel: false,
+          viewMode: '3D',
+      });
+    
+      var loca = new Loca.Container({
+          map,
+      });
+
+      var geo = new Loca.GeoJSONSource({
+          // data: [],
+          url: 'https://a.amap.com/Loca/static/loca-v2/demos/mock_data/china_traffic_event.json',
+      });
+
+      var scatter = window.ll = new Loca.ScatterLayer({
+          // loca,
+          zIndex: 10,
+          opacity: 1,
+          visible: true,
+          zooms: [2, 22],
+      });
+
+      scatter.setSource(geo, {
+          unit: 'px',
+          size: [20, 20],
+          texture: 'https://a.amap.com/Loca/static/loca-v2/demos/images/breath_red.png',
+        //   texture: './download.png',
+          borderWidth: 0,
+      });
+      loca.add(scatter);
+
+      // 呼吸
+      var top10 = {
+          type: 'FeatureCollection',
+          features: [
+          {
+    "type": "Feature",
+    "properties": {
+        "cityName": "北京市",
+        "address": "北京市新文化运动纪念馆",
+        "ratio": 100,
+        "rank": 1
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            116.405286,
+            39.924656
+        ]
+    }
+}
+          
+]
+      };
+      var breath = new Loca.ScatterLayer({
+          zIndex: 121,
+      });
+      breath.setSource(new Loca.GeoJSONSource({
+          data: top10,
+      }));
+      breath.setStyle({
+          unit: 'px',
+          size: [50, 50],
+          texture: 'https://a.amap.com/Loca/static/loca-v2/demos/images/breath_red.png',
+          animate: true,
+          duration: 1000,
+      });
+      loca.add(breath);
+      loca.animate.start();
+
+
+    //构造路线导航类
+    // var driving = new AMap.Driving({
+    //     map: map,
+    //     panel: "panel"
+    // }); 
+    // // 根据起终点名称规划驾车导航路线
+    // driving.search([
+    //     {keyword: '会展中心)',city:'厦门'},
+    //     {keyword: '亦庄文化园(地铁站)',city:'北京'}
+    // ], function(status, result) {
+    //     // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+    //     if (status === 'complete') {
+    //         log.success('绘制驾车路线完成')
+    //     } else {
+    //         log.error('获取驾车数据失败：' + result)
+    //     }
+    // });
+</script>
+</body>
+</html>
